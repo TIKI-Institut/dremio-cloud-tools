@@ -24,6 +24,8 @@ spec:
         dremio-configmap/checksum: {{ (tpl ($.Files.Glob "config/*").AsConfig $) | sha256sum }}
         {{- include "dremio.coordinator.podAnnotations" $ | nindent 8 }}
     spec:
+      affinity:
+      {{- include "dremio.coordinator.nodeAffinity" $ | nindent 8 }}
       {{- include "dremio.coordinator.serviceAccount" $ | nindent 6 }}
       terminationGracePeriodSeconds: 120
       {{- include "dremio.coordinator.nodeSelector" $ | nindent 6 }}
@@ -73,7 +75,7 @@ spec:
         command: ["/opt/dremio/bin/dremio"]
         args: ["start-fg"]
         ports:
-        - containerPort: 31010
+        - containerPort: {{ $.Values.coordinator.client.port }}
           name: client
         - containerPort: 32010
           name: flight

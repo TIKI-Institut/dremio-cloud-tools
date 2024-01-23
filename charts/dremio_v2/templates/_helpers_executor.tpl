@@ -33,7 +33,7 @@ Executor - Dremio Direct Memory Allocation
 {{- if le 32786 $engineMemory -}}
 {{- sub $engineMemory 8192 -}}
 {{- else if le 6144 $engineMemory -}}
-{{- sub $engineMemory 4096 -}}
+{{- sub $engineMemory 6144 -}}
 {{- else -}}
 {{- sub $engineMemory 2048 -}}
 {{- end -}}
@@ -373,5 +373,16 @@ Executor - Dremio JVM Graceful Shutdown Parameters
 -Dservices.web-admin.port={{ include "dremio.executor.metricsPort" $ }}
 -Dservices.web-admin.host=0.0.0.0
 -Dservices.executor.node_lifecycle_service_enabled=true
+{{- end -}}
+{{- end -}}
+
+{{/*
+Executor - NodeAffinity
+*/}}
+{{- define "dremio.executor.nodeAffinity" -}}
+{{- $nodeAffinity := coalesce $.Values.executor.nodeAffinity $.Values.nodeAffinity -}}
+{{- if $nodeAffinity -}}
+nodeAffinity:
+{{- toYaml $nodeAffinity | nindent 2 }}
 {{- end -}}
 {{- end -}}

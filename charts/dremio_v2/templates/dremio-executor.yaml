@@ -28,6 +28,8 @@ spec:
         {{- include "dremio.executor.podAnnotations" (list $ $engineName) | nindent 8}}
         {{- include "dremio.executor.prometheusAnnotations" $ | nindent 8}}
     spec:
+      affinity:
+      {{- include "dremio.executor.nodeAffinity" $ | nindent 8 }}
       {{- include "dremio.executor.serviceAccount" (list $ $engineName) | nindent 6}}
       {{- include "dremio.executor.kubernetes.terminationGracePeriodSeconds" $ | nindent 6}}
       {{- include "dremio.executor.nodeSelector" (list $ $engineName) | nindent 6}}

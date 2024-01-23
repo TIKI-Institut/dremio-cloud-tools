@@ -34,6 +34,7 @@ spec:
                     values:
                     - dremio-coordinator
               topologyKey: "kubernetes.io/hostname"
+      {{- include "dremio.coordinator.nodeAffinity" $ | nindent 8 }}
       terminationGracePeriodSeconds: 120
       {{- include "dremio.coordinator.nodeSelector" $ | nindent 6 }}
       {{- include "dremio.coordinator.tolerations" $ | nindent 6 }}
@@ -87,7 +88,7 @@ spec:
         ports:
         - containerPort: 9047
           name: web
-        - containerPort: 31010
+        - containerPort: {{ $.Values.coordinator.client.port }}
           name: client
         - containerPort: 32010
           name: flight

@@ -73,6 +73,7 @@ spec:
                     values:
                     - zk
               topologyKey: "kubernetes.io/hostname"
+      {{- include "dremio.zookeeper.nodeAffinity" $ | nindent 8 }}
       {{- include "dremio.zookeeper.nodeSelector" $ | nindent 6 }}
       {{- include "dremio.zookeeper.tolerations" $ | nindent 6 }}
       containers:

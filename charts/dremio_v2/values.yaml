@@ -31,6 +31,7 @@ podAnnotations: {}
 labels: {}
 podLabels: {}
 nodeSelector: {}
+nodeAffinity: {}
 tolerations: []
 
 # Dremio Coordinator
@@ -48,7 +49,7 @@ coordinator:
   # Coordinator data volume size (applies to the master coordinator only).
   # In most managed Kubernetes environments (AKS, GKE, etc.), the size of the disk has a direct impact on
   # the provisioned and maximum performance of the disk.
-  volumeSize: 512Gi
+  volumeSize: 128Gi
 
   # Kubernetes Service Account
   # Uncomment below to use a custom Kubernetes service account for the coordinator.
@@ -83,6 +84,7 @@ coordinator:
   #labels: {}
   #podLabels: {}
   #nodeSelector: {}
+  #nodeAffinity: {}
   #tolerations: []
 
   # Web UI
@@ -252,6 +254,7 @@ executor:
   #     labels: {}
   #     podLabels: {}
   #     nodeSelector: {}
+  #     nodeAffinity: {}
   #     tolerations: []
   #
   #     nodeLifecycleService:
@@ -324,6 +327,7 @@ zookeeper:
   #labels: {}
   #podLabels: {}
   #nodeSelector: {}
+  #nodeAffinity: {}
   #tolerations: []
 
 # Control where uploaded files are stored for Dremio.

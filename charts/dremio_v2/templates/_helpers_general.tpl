@@ -75,6 +75,17 @@ nodeSelector:
 {{- end -}}
 
 {{/*
+Admin - Pod Node Affinity
+*/}}
+{{- define "dremio.admin.nodeAffinity" -}}
+{{- $adminNodeAffinity := coalesce $.Values.coordinator.nodeAffinity $.Values.nodeAffinity -}}
+{{- if $adminNodeAffinity -}}
+nodeAffinity:
+{{- toYaml $adminNodeAffinity | nindent 2 }}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Admin - Pod Tolerations
 */}}
 {{- define "dremio.admin.tolerations" -}}

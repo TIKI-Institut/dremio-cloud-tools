@@ -81,6 +81,17 @@ nodeSelector:
 {{- end -}}
 
 {{/*
+Executor - NodeAffinity
+*/}}
+{{- define "dremio.zookeeper.nodeAffinity" -}}
+{{- $nodeAffinity := coalesce $.Values.zookeeper.nodeAffinity $.Values.nodeAffinity -}}
+{{- if $nodeAffinity -}}
+nodeAffinity:
+{{- toYaml $nodeAffinity | nindent 2 }}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Zookeeper - Pod Tolerations
 */}}
 {{- define "dremio.zookeeper.tolerations" -}}

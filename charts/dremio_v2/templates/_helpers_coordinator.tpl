@@ -151,3 +151,14 @@ tolerations:
   {{- toYaml $coordinatorTolerations | nindent 2 }}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Coordinator - NodeAffinity
+*/}}
+{{- define "dremio.coordinator.nodeAffinity" -}}
+{{- $nodeAffinity := coalesce $.Values.coordinator.nodeAffinity $.Values.nodeAffinity -}}
+{{- if $nodeAffinity -}}
+nodeAffinity:
+{{- toYaml $nodeAffinity | nindent 2 }}
+{{- end -}}
+{{- end -}}
