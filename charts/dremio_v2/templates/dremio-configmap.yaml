@@ -7,6 +7,9 @@ data:
   {{- if .Values.ldap.adConfig }}
   ad.json: | {{- tpl .Values.ldap.adConfig . | nindent 4 }}
   {{- end}}
+  {{- if .Values.bootstrapAdminUsers }}
+  bootstrap-admin-users.json: | {{- tpl .Values.bootstrapAdminUsers . | nindent 4 }}
+  {{- end}}
 ---
 apiVersion: v1
 kind: ConfigMap
