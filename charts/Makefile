@@ -12,8 +12,8 @@ endif
 IMAGE_NAME := dremio
 
 .PHONY: login
-login:  ## docker login to docker registry
-	docker login
+login:  ## login to helm registry
+	helm registry login $(REGISTRY)
 
 .PHONY: package
 package: ## package

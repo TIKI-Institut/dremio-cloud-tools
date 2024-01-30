@@ -5,7 +5,7 @@
 run the following command to login to your registry:
 
 ```bash
-make login <your-registry>
+make login REGISTRY=<your-registry>
 # Login Succeeded
 ```
 
