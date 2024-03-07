@@ -523,3 +523,6 @@ service:
 # https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod
 # imagePullSecrets:
 #  - secretname
+
+ldap:
+  enabled: true
