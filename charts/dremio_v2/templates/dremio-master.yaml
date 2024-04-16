@@ -86,6 +86,8 @@ spec:
         args:
         - "start-fg"
         ports:
+        - containerPort: 9010
+          name: prometheus
         - containerPort: 9047
           name: web
         - containerPort: {{ $.Values.coordinator.client.port }}
