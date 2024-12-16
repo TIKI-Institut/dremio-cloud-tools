@@ -165,6 +165,20 @@ tolerations:
 
 More Info: See the [Taints and Tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) documentation for Kubernetes.
 
+###  Write Logs to a File
+
+#### `writeLogsToFile`
+
+Type: Boolean
+
+By default, logs are written to stdout. To write logs to a file on disk, set this value to true.
+
+For example, to write logs to a file:
+
+```yaml
+writeLogsToFile: true
+```
+
 ### Dremio Configuration
 
 #### `coordinator`
@@ -233,6 +247,22 @@ extraInitContainers: |
     image: {{ $.Values.image }}:{{ $.Values.imageTag }}
     command: ["echo", "Hello World"]
 [...]
+```
+
+### `extraEnvs`
+
+Type: Array
+
+By default, this value is not set.
+
+This value controls additional environment variables that are set in Dremio's pods.
+
+For example, to set environment variables:
+
+```yaml
+extraEnvs:
+  - name: EXAMPLE_ENVIRONMENT_VARIABLE
+    value: example_value
 ```
 
 #### `extraVolumes`
@@ -556,6 +586,16 @@ Storage class has a direct impact on the performance of the Dremio cluster. On t
 
 More Info: Refer to the [`storageClass`](#storageclass) section of this reference.
 
+#### `coordinator.logStorageClass`
+
+Type: String
+
+By default, this value is not set. If this value is omitted or set to an empty string, this value will be inherited from the top level `logStorageClass`.
+
+### `coordinator.writeLogsToFile`
+
+By default, logs are written to stdout. To write logs to a file on disk, set this value to true. If this value is omitted or set to an empty string, this value will be inherited from the top level `writeLogsToFile`.
+
 #### `coordinator.serviceAccount`
 
 Type: String
@@ -835,6 +875,17 @@ By default, this value is not set. If this value is omitted or set to an empty s
 
 More Info: Refer to the [`storageClass`](#storageclass) section of this reference.
 
+#### `executor.logStorageClass`
+
+Type: String
+
+By default, this value is not set. If this value is omitted or set to an empty string, this value will be inherited from the top level `logStorageClass`.
+
+### `executor.writeLogsToFile`
+
+By default, logs are written to stdout. To write logs to a file on disk, set this value to true. If this value is omitted or set to an empty string, this value will be inherited from the top level `writeLogsToFile`.
+This value can be set on a **per-engine basis**, see the [Per-Engine Configuration](#per-engine-configuration) section.
+
 #### `executor.serviceAccount`
 
 Type: String
@@ -1005,6 +1056,7 @@ Type: Boolean
 To enable dynamic scaling, this key must be present and set to `true`.
 
 `executor.nodeLifecycleService.metricsPort`
+
 Type: Integer
 
 By default, this value is set to 9010. This is the port where the `/metrics` endpoint is available for a pod.
@@ -1285,6 +1337,10 @@ executor:
         - name: dremio-hello-world
           image: {{ $.Values.image }}:{{ $.Values.imageTag }}
           command: ["echo", "Hello World"]
+
+      extraEnvs:
+        - name: EXAMPLE_ENVIRONMENT_VARIABLE
+          value: example_value
 
       extraVolumes:
       - name: dremio-additional-files

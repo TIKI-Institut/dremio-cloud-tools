@@ -38,8 +38,10 @@ spec:
       terminationGracePeriodSeconds: 120
       {{- include "dremio.coordinator.nodeSelector" $ | nindent 6 }}
       {{- include "dremio.coordinator.tolerations" $ | nindent 6 }}
+      {{- include "dremio.podSecurityContext" $ | nindent 6 }}
       containers:
       - name: dremio-master-coordinator
+        {{- include "dremio.containerSecurityContext" $ | nindent 8 }}
         image: {{ $.Values.image }}:{{ $.Values.imageTag }}
         imagePullPolicy: IfNotPresent
         resources:
@@ -64,6 +66,7 @@ spec:
           mountPath: /opt/dremio/tls
         {{- end }}
         {{- include "dremio.coordinator.extraVolumeMounts" $ | nindent 8 }}
+        {{- include "dremio.coordinator.log.volumeMount" $ | nindent 8 }}
         env:
         - name: DREMIO_MAX_HEAP_MEMORY_SIZE_MB
           value: "{{ template "dremio.coordinator.heapMemory" $ }}"
@@ -78,10 +81,13 @@ spec:
             -Dservices.coordinator.master.embedded-zookeeper.enabled=false
             -Dservices.executor.enabled=false
             -Dservices.conduit.port=45679
+            -XX:ActiveProcessorCount={{- include "dremio.coordinator.activeProcessorCount" $ }}
         - name: AWS_CREDENTIAL_PROFILES_FILE
           value: "/opt/dremio/aws/credentials"
         - name: AWS_SHARED_CREDENTIALS_FILE
           value: "/opt/dremio/aws/credentials"
+        {{- include "dremio.coordinator.log.path" $ | nindent 8 }}
+        {{- include "dremio.coordinator.extraEnvs" $ | nindent 8 }}
         command: ["/opt/dremio/bin/dremio"]
         args:
         - "start-fg"
@@ -90,10 +96,12 @@ spec:
           name: prometheus
         - containerPort: 9047
           name: web
+        {{- if (le (int $.Values.coordinator.count) 0) }}
         - containerPort: {{ $.Values.coordinator.client.port }}
           name: client
         - containerPort: 32010
           name: flight
+        {{- end }}
         - containerPort: 45678
           name: server-fabric
         - containerPort: 45679
@@ -119,24 +127,15 @@ spec:
       initContainers:
       {{- include "dremio.coordinator.extraInitContainers" $ | nindent 6 }}
       - name: start-only-one-dremio-master
+        {{- include "dremio.containerSecurityContext" $ | nindent 8 }}
         image: busybox
         command: ["sh", "-c", "INDEX=${HOSTNAME##*-}; if [ $INDEX -ne 0 ]; then echo Only one master should be running.; exit 1; fi; "]
       - name: wait-for-zookeeper
+        {{- include "dremio.containerSecurityContext" $ | nindent 8 }}
         image: busybox
         command:  ["sh", "-c", "until nc zk-hs 2181 -w1 > /dev/null; do echo Waiting for Zookeeper to be ready.; sleep 2; done;"]
-      - name: chown-data-directory
-        image: {{ $.Values.image }}:{{ $.Values.imageTag }}
-        imagePullPolicy: IfNotPresent
-        securityContext:
-          runAsUser: 0
-        volumeMounts:
-        - name: dremio-master-volume
-          mountPath: /opt/dremio/data
-        command: ["chown"]
-        args:
-        - "dremio:dremio"
-        - "/opt/dremio/data"
       - name: upgrade-task
+        {{- include "dremio.containerSecurityContext" $ | nindent 8 }}
         image: {{ $.Values.image }}:{{ $.Values.imageTag }}
         imagePullPolicy: IfNotPresent
         volumeMounts:
@@ -149,6 +148,7 @@ spec:
         - "upgrade"
       {{- if $.Values.coordinator.web.tls.enabled }}
       - name: generate-ui-keystore
+        {{- include "dremio.containerSecurityContext" $ | nindent 8 }}
         image: {{ $.Values.image }}:{{ $.Values.imageTag }}
         imagePullPolicy: IfNotPresent
         volumeMounts:
@@ -161,6 +161,7 @@ spec:
       {{- end }}
       {{- if $.Values.coordinator.client.tls.enabled }}
       - name: generate-client-keystore
+        {{- include "dremio.containerSecurityContext" $ | nindent 8 }}
         image: {{ $.Values.image }}:{{ $.Values.imageTag }}
         imagePullPolicy: IfNotPresent
         volumeMounts:
@@ -173,6 +174,7 @@ spec:
       {{- end }}
       {{- if $.Values.coordinator.flight.tls.enabled }}
       - name: generate-flight-keystore
+        {{- include "dremio.containerSecurityContext" $ | nindent 8 }}
         image: {{ $.Values.image }}:{{ $.Values.imageTag }}
         imagePullPolicy: IfNotPresent
         volumeMounts:
@@ -230,6 +232,7 @@ spec:
       {{- include "dremio.coordinator.extraVolumes" $ | nindent 6 }}
       {{- include "dremio.imagePullSecrets" $ | nindent 6 }}
   volumeClaimTemplates:
+  {{- include "dremio.coordinator.log.volumeClaimTemplate" $ | nindent 2 }}
   - metadata:
       name: dremio-master-volume
     spec:
